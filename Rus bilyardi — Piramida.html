@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rus bilyardi — Piramida</title>
+<style>
+:root{--bg:#efe9dd;--fg:#2a1d12;--card:#fffaf0;--line:#cdbfa6;--brass:#a9761b;--on:#0f7a45;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#17110c;--fg:#f1e7d3;--card:#251a11;--line:#4a3826;--brass:#d9a441;--on:#3fcf86}}
+:root[data-theme="dark"]{--bg:#17110c;--fg:#f1e7d3;--card:#251a11;--line:#4a3826;--brass:#d9a441;--on:#3fcf86}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--fg);font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif}
+body{min-height:100%;display:flex;flex-direction:column;align-items:center;padding:12px}
+.wrap{width:100%;max-width:min(1000px,calc((100vh - 250px)*1.78));min-width:min(100%,520px);margin:0 auto}
+header{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px}
+h1{font-size:1.25rem;margin:0;font-weight:700}
+.btns{display:flex;gap:6px;flex-wrap:wrap}
+button{font:inherit;font-size:.9rem;padding:7px 12px;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:6px;cursor:pointer}
+button.act{background:var(--brass);color:#fff;border-color:var(--brass)}
+button:focus-visible{outline:3px solid var(--brass);outline-offset:2px}
+.hud{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.pl{border:2px solid var(--line);background:var(--card);border-radius:8px;padding:8px 12px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.pl.on{border-color:var(--on)}
+.pl small{opacity:.8;font-size:1rem}
+#msg{min-height:1.5em;margin:0 0 8px}
+canvas{display:block;width:100%;height:auto;border-radius:14px;touch-action:none;cursor:crosshair;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.pw{margin-top:6px;display:flex;align-items:center;gap:10px;font-size:.9rem}
+.bar{flex:1;height:12px;border:1px solid var(--line);border-radius:6px;background:var(--card);overflow:hidden}
+#pf{height:100%;width:0;background:linear-gradient(90deg,#3fcf86,#e8c33a,#d92b2b)}
+#sp{position:relative;width:42px;height:42px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#d8d2c4);border:2px solid var(--line);cursor:pointer;touch-action:none;flex:none}
+#sp i{position:absolute;left:50%;top:50%;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:#d11a1a;pointer-events:none}
+.help{display:none}
+body{user-select:none;-webkit-user-select:none}
+.stage{position:relative}
+.ov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(10,18,12,.74);border-radius:14px;padding:12px;overflow:auto}
+.ov[hidden]{display:none}
+.pn{background:var(--card);color:var(--fg);border:2px solid var(--brass);border-radius:14px;padding:18px 22px;width:min(440px,100%);max-height:100%;overflow:auto;display:flex;flex-direction:column;gap:10px}
+.pn h2{margin:0 0 2px;font-size:1.6rem}.pn p{margin:0;font-size:.92rem;line-height:1.5}
+.pn button{width:100%;padding:11px;font-size:1rem}.pn .row{display:flex;gap:6px}.pn .row button{flex:1}
+.wrap:fullscreen{background:var(--bg);overflow:auto;padding:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1>Rus bilyardi · Piramida</h1>
+<div class="btns">
+<button id="mn">☰ Menyu</button>
+<button id="fs">⛶ Butun ekran</button><button id="m2" hidden>2 o‘yinchi</button>
+<button id="nw" hidden>Yangi o‘yin</button>
+</div>
+</header>
+<div class="hud">
+<div class="pl" id="p0"><b></b><small></small></div>
+<div class="pl" id="p1"><b></b><small></small></div>
+</div>
+<p id="msg" aria-live="polite"></p>
+<div class="stage"><canvas id="c" width="1000" height="560" aria-label="Rus bilyardi stoli"></canvas><div class="ov" id="ov"></div></div>
+<div class="pw"><div id="sp" title="Shar urilish nuqtasi (spin)" role="img" aria-label="Spin tanlash"><i id="spd"></i></div><span>Kuch</span><div class="bar"><div id="pf"></div></div></div>
+<p class="help"><b>Qoidalar (erkin piramida):</b> 15 ta oq shar piramidada turadi. Istalgan sharni zarba beruvchi qilib tanlash mumkin: shar ustiga ikki marta bosing (yoki sichqonchaning o‘ng tugmasi, yoki Tab). Tanlangan shar oltin halqa bilan ko‘rinadi va boshqa sharga tegishi shart, aks holda xato. Kiritilgan har bir shar (tanlangan shar ham) bir ochko, kiritgan o‘yinchi davom etadi. 8 ochko to‘plagan yutadi.<br><b>Zarba:</b> mo‘ljalni siljiting, bosib turing, teskari tomonga torting va qo‘yib yuboring. Bosib turganda ham ◀ ▶ bilan sekin to‘g‘rilash mumkin (Shift — tezroq), ▲ ▼ — kuch, Space — zarba. Chapdagi shar — spin: nuqtani bosing, markazni bosib tiklang.</p>
+</div>
+<script>
+const cv=document.getElementById('c'),g=cv.getContext('2d');
+const W=1000,H=560,L=50,R=950,T=50,B=510,CY=280,BR=8.5,WIN=8;
+const pk=[[L,T,19],[R,T,19],[L,B,19],[R,B,19],[500,T-4,15],[500,B+4,15]];
+let balls,sel,state,turn,score,mode='ai',msg='',shot,drag=null,power=0,gid=0,potList=[],manual=null,spin={x:0,y:0},mouse={x:700,y:280},lt=0,lp={x:0,y:0};
+let streak=0,paused=true,banr=null,cur,back,kh=0;
+function load(k){try{return JSON.parse(localStorage.getItem('rp_'+k))||{}}catch(e){return{}}}
+const opt=Object.assign({snd:1,guide:1,diff:1},load('opt')),st=Object.assign({w:0,l:0,combo:0},load('st'));
+function save(){try{localStorage.setItem('rp_opt',JSON.stringify(opt));localStorage.setItem('rp_st',JSON.stringify(st))}catch(e){}}
+const keys={};
+const cloth=(()=>{const o=document.createElement('canvas');o.width=o.height=96;const x=o.getContext('2d');for(let i=0;i<1400;i++){x.fillStyle=Math.random()<.5?'rgba(0,0,0,.07)':'rgba(255,255,255,.05)';x.fillRect(Math.random()*96,Math.random()*96,1.5,1.5)}return g.createPattern(o,'repeat')})();
+const $=id=>document.getElementById(id);
+const pname=i=>mode=='ai'?(i?'Kompyuter':'Siz'):(i+1)+'-o‘yinchi';
+const human=()=>mode=='2p'||turn==0;
+let ac=null;
+function snd(v){if(!opt.snd)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),k=ac.createGain();o.frequency.value=300+Math.random()*120+v*20;k.gain.value=Math.min(.25,v*.02);o.connect(k);k.connect(ac.destination);o.start();k.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.07);o.stop(ac.currentTime+.08)}catch(e){}}
+function newGame(){
+  gid++;manual=null;setSpin(0,0);streak=0;banr=null;balls=[];potList=[];score=[0,0];turn=0;state='aim';drag=null;power=0;
+  const mk=(n,x,y)=>({n,x,y,vx:0,vy:0,in:false,px:Math.random()*6.28,py:Math.random()*6.28});
+  balls.push(mk(0,250,CY));let k=1;
+  for(let i=0;i<5;i++)for(let j=0;j<=i;j++)balls.push(mk(k++,725+i*(2*BR*.866+.5),CY+(j-i/2)*(2*BR+.3)));
+  sel=balls[0];
+  msg=(mode=='ai'?'Siz':'1-o‘yinchi')+' boshlaysiz: piramidani sindiring. Istalgan sharni tanlash mumkin (ikki marta bosing).';
+  ui();
+}
+function ui(){
+  for(let i=0;i<2;i++){const e=$('p'+i);e.className='pl'+(turn==i&&state!='over'?' on':'');
+    e.querySelector('b').textContent=pname(i);e.querySelector('small').textContent=score[i]+' / '+WIN+' shar'}
+  $('msg').textContent=msg;
+}
+function shoot(a,p){
+  const c=sel,sp=human()?spin:{x:0,y:0};
+  for(const b of balls){b.spx=0;b.spy=0}
+  shot={struck:c,touched:false,pocketed:[]};
+  c.spx=sp.x;c.spy=sp.y;c.sdx=Math.cos(a);c.sdy=Math.sin(a);
+  c.vx=c.sdx*p*60;c.vy=c.sdy*p*60;state='moving';snd(p*10);manual=null;setSpin(0,0);msg='';ui();
+}
+function rb(b,nx,ny){const vn=Math.abs(b.vx*nx+b.vy*ny);snd(vn*.5);if(b.spx){b.vx+=-ny*b.spx*vn*.25;b.vy+=nx*b.spx*vn*.25;b.spx*=.6}}
+function physics(){
+  const N=8;
+  for(let s=0;s<N;s++){
+    for(const b of balls){if(b.in)continue;b.x+=b.vx/N;b.y+=b.vy/N}
+    for(let i=0;i<balls.length;i++){const a=balls[i];if(a.in)continue;
+      for(let j=i+1;j<balls.length;j++){const b=balls[j];if(b.in)continue;
+        const dx=b.x-a.x,dy=b.y-a.y,d2=dx*dx+dy*dy;
+        if(d2<4*BR*BR&&d2>0){
+          const d=Math.sqrt(d2),nx=dx/d,ny=dy/d,ov=(2*BR-d)/2;
+          a.x-=nx*ov;a.y-=ny*ov;b.x+=nx*ov;b.y+=ny*ov;
+          const dv=(a.vx-b.vx)*nx+(a.vy-b.vy)*ny;
+          if(dv>0){const j2=dv*.98;a.vx-=j2*nx;a.vy-=j2*ny;b.vx+=j2*nx;b.vy+=j2*ny;snd(dv);
+            const cb=a===shot.struck?a:b===shot.struck?b:null;
+            if(cb){shot.touched=true;if(cb.spy){cb.vx+=cb.sdx*cb.spy*dv*.55;cb.vy+=cb.sdy*cb.spy*dv*.55;cb.spy=0}}}
+        }}}
+    for(const b of balls){if(b.in)continue;
+      let near=false;for(const p of pk)if(Math.hypot(b.x-p[0],b.y-p[1])<p[2]+2){near=true;break}
+      if(!near){
+        if(b.x<L+BR){b.x=L+BR;b.vx=Math.abs(b.vx)*.8;rb(b,1,0)}
+        if(b.x>R-BR){b.x=R-BR;b.vx=-Math.abs(b.vx)*.8;rb(b,-1,0)}
+        if(b.y<T+BR){b.y=T+BR;b.vy=Math.abs(b.vy)*.8;rb(b,0,1)}
+        if(b.y>B-BR){b.y=B-BR;b.vy=-Math.abs(b.vy)*.8;rb(b,0,-1)}
+      }
+      let fell=b.x<L-6||b.x>R+6||b.y<T-6||b.y>B+6;
+      if(!fell)for(const p of pk)if(Math.hypot(b.x-p[0],b.y-p[1])<p[2]){fell=true;break}
+      if(fell){b.in=true;b.vx=b.vy=0;snd(8);shot.pocketed.push(b);potList.push(b)}
+    }
+  }
+  let mv=false;
+  for(const b of balls){if(b.in)continue;
+    b.px+=b.vx/BR;b.py+=b.vy/BR;b.vx*=.985;b.vy*=.985;
+    const sp=Math.hypot(b.vx,b.vy);
+    if(sp<.06){b.vx=b.vy=0}else{mv=true;const k=Math.max(0,sp-.015)/sp;b.vx*=k;b.vy*=k}}
+  if(!mv)resolve();
+}
+function valid(x,y,ign){
+  if(x<L+BR||x>R-BR||y<T+BR||y>B-BR)return false;
+  for(const p of pk)if(Math.hypot(x-p[0],y-p[1])<p[2]+14)return false;
+  for(const q of balls)if(q!==ign&&!q.in&&Math.hypot(q.x-x,q.y-y)<2*BR+1)return false;
+  return true;
+}
+function respot(b){
+  potList=potList.filter(q=>q!==b);
+  for(let r=0;r<500;r+=6)for(let a=0;a<6.3;a+=.5){
+    const x=725+Math.cos(a)*r,y=CY+Math.sin(a)*r;
+    if(valid(x,y,b)){b.x=x;b.y=y;b.in=false;b.vx=b.vy=0;return}}
+}
+function resolve(){
+  const s=shot,me=turn,pot=s.pocketed;
+  if(!s.touched){
+    pot.forEach(respot);turn=1-me;streak=0;
+    msg='Xato: tanlangan shar boshqa sharga tegmadi'+(pot.length?', kiritilgan sharlar stolga qaytarildi':'')+'. '+pname(turn)+' navbati.';
+  }else if(pot.length){
+    score[me]+=pot.length;streak+=pot.length;if(streak>st.combo&&(mode=='2p'||me==0)){st.combo=streak;save()}if(streak>=2)banner(streak);
+    if(score[me]>=WIN){endGame(me);state='over';msg='🏆 '+pname(me)+' g‘alaba qozondi!';ui();return}
+    msg=pname(me)+' '+pot.length+' ta shar kiritdi va davom etadi.';
+  }else{turn=1-me;streak=0;msg=pname(turn)+' navbati.'}
+  if(sel.in)sel=balls.find(b=>!b.in)||sel;
+  state='aim';
+  ui();aiSchedule();
+}
+function aiSchedule(){
+  if(mode!='ai'||turn!=1||state=='over')return;
+  const id=gid;setTimeout(()=>{if(id==gid&&state=='aim'&&turn==1)aiShoot()},1100);
+}
+function blocked(x1,y1,x2,y2,ign){
+  const dx=x2-x1,dy=y2-y1,l2=dx*dx+dy*dy||1;
+  for(const b of balls){if(b.in||ign.includes(b))continue;
+    const t=Math.max(0,Math.min(1,((b.x-x1)*dx+(b.y-y1)*dy)/l2));
+    if(Math.hypot(x1+dx*t-b.x,y1+dy*t-b.y)<2*BR-1)return true}
+  return false;
+}
+function aiShoot(){
+  const on=balls.filter(b=>!b.in);let best=null;
+  for(const S of on)for(const t of on){if(t===S)continue;
+    for(const p of pk){
+      const dx=p[0]-t.x,dy=p[1]-t.y,d=Math.hypot(dx,dy);
+      const gx=t.x-dx/d*2*BR,gy=t.y-dy/d*2*BR,ax=gx-S.x,ay=gy-S.y,ad=Math.hypot(ax,ay);
+      if(ad<1)continue;const cs=(ax*dx+ay*dy)/(ad*d);if(cs<.5)continue;
+      if(blocked(S.x,S.y,gx,gy,[S,t])||blocked(t.x,t.y,p[0],p[1],[S,t]))continue;
+      const sc=ad+d-cs*350;
+      if(!best||sc<best.sc)best={sc,S,gx,gy,ad,d};
+    }}
+  let S,ang,pw;
+  if(best){S=best.S;ang=Math.atan2(best.gy-S.y,best.gx-S.x)+(Math.random()-.5)*AIE[opt.diff];pw=Math.max(.18,Math.min(.55,.13+(best.ad+best.d)/2800))}
+  else{let m=1e9,t0;for(const a of on)for(const b of on)if(a!==b){const d=Math.hypot(a.x-b.x,a.y-b.y);if(d<m){m=d;S=a;t0=b}}
+    ang=Math.atan2(t0.y-S.y,t0.x-S.x);pw=.33}
+  sel=S;shoot(ang,pw);
+}
+function rr(x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
+function drawBall(x,y,r,px,py){
+  g.save();
+  g.fillStyle='rgba(0,0,0,.3)';g.beginPath();g.arc(x+2.2,y+2.8,r,0,7);g.fill();
+  g.beginPath();g.arc(x,y,r,0,7);g.clip();
+  g.fillStyle='#fbfaf4';g.fillRect(x-r,y-r,2*r,2*r);
+  const f=Math.cos(px)*Math.cos(py);
+  if(f>0){g.fillStyle='#d11a1a';g.beginPath();g.arc(x+r*.62*Math.sin(px),y+r*.62*Math.sin(py),r*.26*(.35+.65*f),0,7);g.fill()}
+  const gr=g.createRadialGradient(x-r*.35,y-r*.4,1,x,y,r);
+  gr.addColorStop(0,'rgba(255,255,255,.5)');gr.addColorStop(.4,'rgba(255,255,255,0)');gr.addColorStop(1,'rgba(40,40,70,.38)');
+  g.fillStyle=gr;g.fillRect(x-r,y-r,2*r,2*r);
+  g.fillStyle='rgba(255,255,255,.9)';g.beginPath();g.ellipse(x-r*.38,y-r*.42,r*.2,r*.13,-.6,0,7);g.fill();
+  g.restore();
+}
+function aimAng(){return drag?drag.ang:manual!=null?manual:Math.atan2(mouse.y-sel.y,mouse.x-sel.x)}
+function drawAim(){
+  const c=sel,a=aimAng(),dx=Math.cos(a),dy=Math.sin(a);
+  let best=1e9,hit=null;
+  for(const b of balls){if(b.in||b===c)continue;
+    const rx=b.x-c.x,ry=b.y-c.y,t=rx*dx+ry*dy;if(t<=0)continue;
+    const pe=Math.abs(rx*dy-ry*dx);if(pe>=2*BR)continue;
+    const tc=t-Math.sqrt(4*BR*BR-pe*pe);if(tc<best){best=tc;hit=b}}
+  let tw=1e9;
+  if(dx>0)tw=Math.min(tw,(R-BR-c.x)/dx);if(dx<0)tw=Math.min(tw,(L+BR-c.x)/dx);
+  if(dy>0)tw=Math.min(tw,(B-BR-c.y)/dy);if(dy<0)tw=Math.min(tw,(T+BR-c.y)/dy);
+  const len=Math.min(best,tw),ex=c.x+dx*len,ey=c.y+dy*len;
+  g.save();g.globalAlpha=opt.guide?1:0;g.setLineDash([7,6]);g.strokeStyle='rgba(255,255,255,.75)';g.lineWidth=1.5;
+  g.beginPath();g.moveTo(c.x+dx*BR,c.y+dy*BR);g.lineTo(ex,ey);g.stroke();g.setLineDash([]);
+  g.beginPath();g.arc(ex,ey,BR,0,7);g.stroke();
+  if(hit&&best<tw){const nx=hit.x-ex,ny=hit.y-ey,nl=Math.hypot(nx,ny),ux=nx/nl,uy=ny/nl;
+    g.strokeStyle='rgba(255,230,120,.9)';g.beginPath();g.moveTo(hit.x,hit.y);g.lineTo(hit.x+ux*70,hit.y+uy*70);g.stroke();
+    const dn=dx*ux+dy*uy,cx=dx-dn*ux,cy=dy-dn*uy,cl=Math.hypot(cx,cy);
+    if(cl>.05){const k=Math.min(110,40+cl*110)/cl;g.strokeStyle='rgba(140,210,255,.95)';g.beginPath();g.moveTo(ex,ey);g.lineTo(ex+cx*k,ey+cy*k);g.stroke()}}
+  else{const hx=Math.abs(ex-(R-BR))<.5||Math.abs(ex-(L+BR))<.5,hy=Math.abs(ey-(B-BR))<.5||Math.abs(ey-(T+BR))<.5,rx=hx?-dx:dx,ry=hy?-dy:dy;let t2=170;
+    if(rx>0)t2=Math.min(t2,(R-BR-ex)/rx);if(rx<0)t2=Math.min(t2,(L+BR-ex)/rx);if(ry>0)t2=Math.min(t2,(B-BR-ey)/ry);if(ry<0)t2=Math.min(t2,(T+BR-ey)/ry);
+    g.strokeStyle='rgba(140,210,255,.95)';g.beginPath();g.moveTo(ex,ey);g.lineTo(ex+rx*t2,ey+ry*t2);g.stroke()}
+  g.restore();
+  const pull=BR+6+power*90;
+  g.save();g.translate(c.x,c.y);g.rotate(a);
+  const kg=g.createLinearGradient(0,-4,0,4);kg.addColorStop(0,'#e9c88a');kg.addColorStop(1,'#8a5a2a');
+  g.shadowColor='rgba(0,0,0,.4)';g.shadowBlur=6;g.shadowOffsetY=4;
+  g.fillStyle=kg;g.beginPath();g.moveTo(-pull,-2.2);g.lineTo(-pull-300,-5);g.lineTo(-pull-300,5);g.lineTo(-pull,2.2);g.closePath();g.fill();g.shadowColor='transparent';
+  g.fillStyle='#2a1a10';g.beginPath();g.moveTo(-pull-170,-3.8);g.lineTo(-pull-300,-5);g.lineTo(-pull-300,5);g.lineTo(-pull-170,3.8);g.closePath();g.fill();
+  g.fillStyle='#3a6ea5';g.fillRect(-pull-3,-2.4,3,4.8);
+  g.restore();
+}
+function draw(){
+  g.clearRect(0,0,W,H);
+  let gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,'#74431f');gr.addColorStop(.5,'#8f592b');gr.addColorStop(1,'#5c3418');
+  g.fillStyle=gr;rr(0,0,W,H,26);g.fill();
+  g.save();g.clip();g.strokeStyle='rgba(0,0,0,.09)';g.lineWidth=1;for(let i=0;i<70;i++){g.beginPath();g.moveTo(0,i*8+3);g.bezierCurveTo(300,i*8+9,700,i*8-4,W,i*8+5);g.stroke()}g.restore();
+  g.fillStyle='#064a2d';g.fillRect(L-14,T-14,R-L+28,B-T+28);
+  const fg=g.createRadialGradient(500,CY,60,500,CY,520);fg.addColorStop(0,'#139555');fg.addColorStop(1,'#0b6a3a');
+  g.fillStyle=fg;g.fillRect(L,T,R-L,B-T);
+  g.fillStyle=cloth;g.fillRect(L,T,R-L,B-T);
+  const lg=g.createRadialGradient(500,CY,80,500,CY,560);lg.addColorStop(0,'rgba(255,255,220,.10)');lg.addColorStop(1,'rgba(0,0,0,.32)');g.fillStyle=lg;g.fillRect(L,T,R-L,B-T);
+  g.lineWidth=2;g.strokeStyle='rgba(255,255,255,.18)';g.strokeRect(L,T,R-L,B-T);g.strokeStyle='rgba(0,0,0,.4)';g.strokeRect(L-14,T-14,R-L+28,B-T+28);
+  g.strokeStyle='rgba(255,255,255,.14)';g.beginPath();g.moveTo(275,T);g.lineTo(275,B);g.stroke();
+  g.beginPath();g.arc(275,CY,50,Math.PI/2,Math.PI*1.5);g.stroke();
+  g.fillStyle='rgba(255,255,255,.35)';g.beginPath();g.arc(725,CY,2.5,0,7);g.fill();
+  g.fillStyle='#e9d9a8';
+  for(let k=1;k<8;k++){if(k==4)continue;const x=L+(R-L)*k/8;for(const y of[26,H-26]){g.beginPath();g.moveTo(x,y-5);g.lineTo(x+4,y);g.lineTo(x,y+5);g.lineTo(x-4,y);g.fill()}}
+  for(let k=1;k<4;k++){const y=T+(B-T)*k/4;for(const x of[26,W-26]){g.beginPath();g.moveTo(x,y-5);g.lineTo(x+4,y);g.lineTo(x,y+5);g.lineTo(x-4,y);g.fill()}}
+  for(const p of pk){const pg=g.createRadialGradient(p[0],p[1],2,p[0],p[1],p[2]+3);pg.addColorStop(0,'#000');pg.addColorStop(1,'#222');
+    g.fillStyle=pg;g.beginPath();g.arc(p[0],p[1],p[2]+3,0,7);g.fill();g.strokeStyle='#c9a24a';g.lineWidth=2.5;g.stroke()}
+  potList.forEach((b,i)=>drawBall(130+i*20,H-26,7,b.px,b.py));
+  for(const b of balls)if(!b.in)drawBall(b.x,b.y,BR,b.px,b.py);
+  if(state=='aim'&&human()&&!sel.in){
+    g.save();g.strokeStyle='rgba(255,210,74,.95)';g.lineWidth=2;g.setLineDash([4,3]);g.beginPath();g.arc(sel.x,sel.y,BR+5,0,7);g.stroke();g.restore();
+    drawAim();
+  }
+  drawBanner();if(state=='over'){
+    g.fillStyle='rgba(0,0,0,.55)';g.fillRect(0,0,W,H);
+    g.fillStyle='#fff';g.textAlign='center';g.textBaseline='middle';g.font='bold 34px Georgia,serif';
+    g.fillText(msg,W/2,H/2-14);g.font='20px Georgia,serif';g.fillText('«Yangi o‘yin» tugmasini bosing',W/2,H/2+28);
+  }
+}
+let last=performance.now(),acc=0;
+function loop(t){
+  acc+=Math.min(60,t-last);last=t;
+  while(acc>=16.67){if(!paused){if(state=='moving')physics();else keyStep()}acc-=16.67}
+  draw();$('pf').style.width=(power*100)+'%';
+  requestAnimationFrame(loop);
+}
+function pt(e){const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height}}
+const ballAt=m=>balls.find(b=>!b.in&&Math.hypot(b.x-m.x,b.y-m.y)<BR+4);
+cv.addEventListener('pointermove',e=>{
+  if(!drag)manual=null;mouse=pt(e);
+  if(drag){const dx=Math.cos(drag.ang),dy=Math.sin(drag.ang);
+    power=Math.max(0,Math.min(1,-((mouse.x-drag.p0.x)*dx+(mouse.y-drag.p0.y)*dy)/200))}
+});
+cv.addEventListener('pointerdown',e=>{
+  mouse=pt(e);if(!human()||state!='aim')return;
+  const now=performance.now(),dbl=now-lt<350&&Math.hypot(mouse.x-lp.x,mouse.y-lp.y)<14;lt=now;lp=mouse;
+  const hb=ballAt(mouse);
+  if(dbl&&hb){sel=hb;manual=null;drag=null;power=0;return}
+  cv.setPointerCapture(e.pointerId);drag={p0:mouse,ang:aimAng()};power=0;
+});
+cv.addEventListener('pointerup',()=>{
+  if(!drag)return;
+  const a=drag.ang,p=power;drag=null;power=0;
+  if(p>.04&&state=='aim')shoot(a,p);
+});
+cv.addEventListener('pointercancel',()=>{drag=null;power=0});
+cv.addEventListener('contextmenu',e=>{e.preventDefault();const hb=ballAt(pt(e));if(hb&&state=='aim'&&human()){sel=hb;manual=null}});
+const spEl=$('sp'),spd=$('spd');
+function setSpin(x,y){spin.x=x;spin.y=y;spd.style.left=(50+x*40)+'%';spd.style.top=(50-y*40)+'%'}
+spEl.addEventListener('pointerdown',e=>{const r=spEl.getBoundingClientRect();let x=((e.clientX-r.left)/r.width-.5)*2,y=-((e.clientY-r.top)/r.height-.5)*2;const m=Math.hypot(x,y);if(m>.8){x*=.8/m;y*=.8/m}if(m<.12){x=0;y=0}setSpin(x,y)});
+addEventListener('keydown',e=>{
+  if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown',' ','Enter','Tab'].includes(e.key))e.preventDefault();
+  keys[e.key]=true;
+  if(e.key=='Escape'){if(ov.hidden){if(state!='over')pauseMenu()}else if(cur===pauseMenu)hideMenu()}
+  if(state!='aim'||!human())return;
+  if(e.key=='Tab'&&!e.repeat&&!paused){const on=balls.filter(b=>!b.in),i=on.indexOf(sel);sel=on[(i+1)%on.length];manual=null}
+  if((e.key==' '||e.key=='Enter')&&!paused&&!e.repeat&&!sel.in&&power>.04){const a=aimAng(),p=power;drag=null;power=0;shoot(a,p)}
+});
+addEventListener('keyup',e=>{keys[e.key]=false});
+addEventListener('blur',()=>{for(const k in keys)keys[k]=false});
+function keyStep(){
+  if(state!='aim'||!human())return;
+  const dir=(keys.ArrowRight?1:0)-(keys.ArrowLeft?1:0);kh=dir?kh+1:0;const d=dir*(.00022+Math.min(kh/150,1)*.0004)*(keys.Shift?4:1);
+  if(d){if(drag)drag.ang+=d;else manual=aimAng()+d}
+  const dp=((keys.ArrowUp?1:0)-(keys.ArrowDown?1:0))*.008;
+  if(dp)power=Math.max(0,Math.min(1,power+dp));
+}
+function setMode(m){mode=m;newGame()}
+$('mn').onclick=()=>state=='over'?mainMenu():pauseMenu();
+$('fs').onclick=()=>{const e=document.querySelector('.wrap');if(document.fullscreenElement)document.exitFullscreen();else if(e.requestFullscreen)e.requestFullscreen()};
+const ov=$('ov'),DN=['Oson','O‘rta','Qiyin'],AIE=[.045,.02,.007],BN=['','','DOUBLE','TRIPLE','QUADRUPLE','PENTA','HEXA','HEPTA','OCTA'];
+function panel(h,c){cur=c;ov.innerHTML='<div class="pn">'+h+'</div>';ov.hidden=false;paused=true}
+function hideMenu(){ov.hidden=true;paused=false}
+function mainMenu(){panel('<h2>Rus bilyardi</h2><p>Erkin piramida, 8 ochkogacha. G‘alabalar: '+st.w+' · Mag‘lubiyatlar: '+st.l+' · Eng uzun seriya: '+st.combo+'</p><button class="act" data-a="ai">Kompyuterga qarshi ('+DN[opt.diff]+')</button><button data-a="2p">2 o‘yinchi</button><div class="row"><button data-a="set">Sozlamalar</button><button data-a="help">Qoidalar</button></div>',mainMenu)}
+function pauseMenu(){panel('<h2>Pauza</h2><button class="act" data-a="resume">Davom etish</button><button data-a="restart">Qayta boshlash</button><button data-a="set">Sozlamalar</button><button data-a="menu">Bosh menyu</button>',pauseMenu)}
+function setMenu(){panel('<h2>Sozlamalar</h2><button data-a="snd">Ovoz: '+(opt.snd?'yoqilgan':'o‘chiq')+'</button><button data-a="guide">Nishon chizig‘i: '+(opt.guide?'yoqilgan':'o‘chiq')+'</button><button data-a="diff">Kompyuter darajasi: '+DN[opt.diff]+'</button><button data-a="back">Orqaga</button>',setMenu)}
+function helpMenu(){panel('<h2>Qoidalar</h2><p>15 ta oq shar piramidada turadi. Istalgan sharni zarba beruvchi qilib tanlash mumkin: ikki marta bosing (yoki o‘ng tugma, Tab). U boshqa sharga tegishi shart, aks holda xato. Kiritilgan har bir shar — 1 ochko va navbat sizda qoladi. Ketma-ket kiritilgan sharlar Double, Triple, Quadruple... seriyasini beradi. 8 ochko yutadi. Nishonlash: bosib turib ◀ ▶ bilan sekin to‘g‘rilang (Shift — tezroq), ▲ ▼ — kuch, Space — zarba, Esc — pauza.</p><button data-a="back">Orqaga</button>',helpMenu)}
+function overMenu(w){panel('<h2>🏆 '+pname(w)+' g‘alaba qozondi!</h2><p>Hisob: '+score[0]+' : '+score[1]+'</p><button class="act" data-a="restart">Yana o‘ynash</button><button data-a="menu">Bosh menyu</button>',overMenu)}
+function endGame(me){if(mode=='ai'){if(me==0)st.w++;else st.l++;save()}const id=gid;setTimeout(()=>{if(id==gid)overMenu(me)},1800)}
+ov.addEventListener('click',e=>{const a=e.target.dataset&&e.target.dataset.a;if(!a)return;
+  if(a=='ai'||a=='2p'){mode=a;newGame();hideMenu()}
+  else if(a=='resume')hideMenu();
+  else if(a=='restart'){newGame();hideMenu()}
+  else if(a=='menu')mainMenu();
+  else if(a=='set'){back=cur;setMenu()}
+  else if(a=='help'){back=cur;helpMenu()}
+  else if(a=='back')back();
+  else{if(a=='snd')opt.snd=1-opt.snd;if(a=='guide')opt.guide=1-opt.guide;if(a=='diff')opt.diff=(opt.diff+1)%3;save();setMenu()}
+});
+function tone(f,d){if(!opt.snd)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),k=ac.createGain();o.type='triangle';o.frequency.value=f;k.gain.value=.12;o.connect(k);k.connect(ac.destination);o.start();k.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d);o.stop(ac.currentTime+d+.02)}catch(e){}}
+function banner(n){banr={t:performance.now(),n};for(let i=0;i<Math.min(n,6);i++)setTimeout(()=>tone(392*Math.pow(1.26,i),.3),i*110)}
+function drawBanner(){
+  if(!banr)return;const t=(performance.now()-banr.t)/1800;if(t>1){banr=null;return}
+  const n=banr.n,s=t<.15?t/.15*1.25:t<.3?1.25-(t-.15)/.15*.25:1,txt=BN[Math.min(n,8)]+'!';
+  g.save();g.globalAlpha=t>.7?(1-t)/.3:1;g.translate(W/2,CY);g.scale(s,s);g.textAlign='center';g.textBaseline='middle';
+  g.font='italic 900 '+(n<4?84:68)+'px Georgia,serif';g.lineWidth=10;g.strokeStyle='rgba(60,20,0,.85)';g.strokeText(txt,0,0);
+  const gr=g.createLinearGradient(0,-40,0,40);gr.addColorStop(0,'#fff3b0');gr.addColorStop(1,'#e8a317');g.fillStyle=gr;g.fillText(txt,0,0);
+  g.font='bold 26px Georgia,serif';g.fillStyle='#fff';g.fillText('×'+n+' ketma-ket shar',0,58);g.restore();
+}
+newGame();mainMenu();requestAnimationFrame(loop);
+</script>
+</body>
+</html>
